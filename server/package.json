@@ -1,0 +1,27 @@
+{
+  "name": "slone-clone-server",
+  "version": "0.0.1",
+  "description": "Servier for Slone - A Slack clone",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "nodemon --exec babel-node src/server.js",
+    "dist": "babel src --out-dir dist",
+    "serve": "node dist/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Glish/slone-clone.git"
+  },
+  "author": "Liam Manderson",
+  "bugs": {
+    "url": "https://github.com/Glish/slone-clone/issues"
+  },
+  "homepage": "https://github.com/Glish/slone-clone#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/node": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
+    "nodemon": "^1.19.1"
+  }
+}
