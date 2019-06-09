@@ -14,4 +14,7 @@ CONFIG.dbName = process.env.DB_NAME || "name";
 CONFIG.dbUser = process.env.DB_USER || "root";
 CONFIG.dbPassword = process.env.DB_PASSWORD || "db-password";
 
+CONFIG.jwtEncryption = process.env.JWT_ENCRYPTION || "jwt_please_change";
+CONFIG.jwtExpiration = process.env.JWT_EXPIRATION || "10000";
+
 export default CONFIG;

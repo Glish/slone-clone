@@ -1,6 +1,5 @@
-import Sequelize from 'sequelize';
-import { ThrowError, to } from '../services/util.service';
-import CONFIG from '../config/config';
+import Sequelize from "sequelize";
+import CONFIG from "../config/config";
 
 class Channel extends Sequelize.Model {
   static init(sequelize, DataTypes) {
@@ -9,18 +8,13 @@ class Channel extends Sequelize.Model {
         name: {
           type: DataTypes.STRING,
           allowNull: false,
-          unique: true,
-        },
+          unique: true
+        }
       },
       {
-        sequelize,
-      },
+        sequelize
+      }
     );
-  }
-
-  toWeb() {
-    const json = this.toJSON();
-    return json;
   }
 }
 
