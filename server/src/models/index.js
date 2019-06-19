@@ -1,3 +1,4 @@
+import * as R from "ramda";
 import Sequelize from "sequelize";
 import CONFIG from "../config/config";
 

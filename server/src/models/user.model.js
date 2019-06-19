@@ -1,7 +1,9 @@
+import * as R from "ramda";
 import Sequelize from "sequelize";
 import bcrypt from "bcrypt";
 import bcryptPromise from "bcrypt-promise";
-import { to } from "./utils";
+import jwt from "jsonwebtoken";
+import { to } from "../utils";
 import CONFIG from "../config/config";
 
 class User extends Sequelize.Model {
@@ -31,16 +33,15 @@ class User extends Sequelize.Model {
               [err, salt] = await to(bcrypt.genSalt(10));
 
               if (err) {
-                throw new Error(err.message);
+                throw err.message;
               }
 
               [err, hash] = await to(bcrypt.hash(user.password, salt));
 
               if (err) {
-                throw new Error(err.message);
+                throw err.message;
               }
 
-              // eslint-disable-next-line no-param-reassign
               user.password = hash;
             }
           }
@@ -64,6 +65,19 @@ class User extends Sequelize.Model {
     }
 
     return this;
+  }
+
+  getJWT() {
+    const expirationTime = parseInt(CONFIG.jwtExpiration, 10);
+
+    return jwt.sign({ user_id: this.id }, CONFIG.jwtEncryption, {
+      expiresIn: expirationTime
+    });
+  }
+
+  toWeb() {
+    const json = this.toJSON();
+    return json;
   }
 }
 

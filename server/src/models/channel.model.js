@@ -16,6 +16,11 @@ class Channel extends Sequelize.Model {
       }
     );
   }
+
+  toWeb() {
+    const json = this.toJSON();
+    return json;
+  }
 }
 
 export default Channel;
