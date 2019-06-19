@@ -1,6 +1,9 @@
 import { combineReducers } from "redux";
 import values from "./utilities/values";
 
+import AuthReducer from "./reducers/AuthReducer";
+import ChannelReducer from "./reducers/ChannelReducer";
+
 export const defaultState = {
   debug: {}
 };
@@ -14,7 +17,9 @@ export function debugReducer(state = defaultState, action) {
 }
 
 const appReducer = combineReducers({
-  debug: debugReducer
+  debug: debugReducer,
+  auth: AuthReducer,
+  channel: ChannelReducer
 });
 
 const rootReducer = (state, action) => {
