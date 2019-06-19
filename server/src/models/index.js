@@ -4,6 +4,7 @@ import CONFIG from "../config/config";
 
 import userModel from "./user.model";
 import channelModel from "./channel.model";
+import messageModel from "./message.model";
 
 const sequelize = new Sequelize(
   CONFIG.dbName,
@@ -18,7 +19,8 @@ const sequelize = new Sequelize(
 
 const models = {
   User: userModel.init(sequelize, Sequelize),
-  Channel: channelModel.init(sequelize, Sequelize)
+  Channel: channelModel.init(sequelize, Sequelize),
+  Message: messageModel.init(sequelize, Sequelize)
 };
 
 Object.values(models)

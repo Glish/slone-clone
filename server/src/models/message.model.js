@@ -1,14 +1,13 @@
 import Sequelize from "sequelize";
 import CONFIG from "../config/config";
 
-class Channel extends Sequelize.Model {
+class Message extends Sequelize.Model {
   static init(sequelize, DataTypes) {
     return super.init(
       {
-        name: {
+        message: {
           type: DataTypes.STRING,
-          allowNull: false,
-          unique: true
+          allowNull: false
         }
       },
       {
@@ -18,7 +17,7 @@ class Channel extends Sequelize.Model {
   }
 
   static associate(models) {
-    this.myAssociation = this.hasMany(models.Message);
+    this.myAssociation = this.belongsTo(models.Channel);
   }
 
   toWeb() {
@@ -27,4 +26,4 @@ class Channel extends Sequelize.Model {
   }
 }
 
-export default Channel;
+export default Message;

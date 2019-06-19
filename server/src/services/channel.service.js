@@ -23,3 +23,18 @@ export const getChannels = async () => {
 
   return channels;
 };
+
+export const getChannel = async id => {
+  const [err, channel] = await to(
+    models.Channel.findByPk(id, {
+      include: [
+        {
+          model: models.Message
+        }
+      ]
+    })
+  );
+  if (err) throw "Failed to get channel";
+
+  return channel.toWeb();
+};

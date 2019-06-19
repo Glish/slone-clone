@@ -12,6 +12,7 @@ import { to } from "./utils";
 import routerV1 from "./routes/rest-v1";
 import * as authService from "./services/authService";
 import * as channelService from "./services/channel.service";
+import * as messageService from "./services/message.service";
 
 console.log("Environment:", CONFIG.app);
 
@@ -132,6 +133,19 @@ io.on("connection", socket => {
       socket.emit("error", err);
     } else {
       socket.emit("createChannel", { channels });
+    }
+  });
+
+  socket.on("joinChannel", async req => {
+    const [err, channel] = await to(channelService.getChannel(req.data));
+
+    socket.join(channel.name);
+    socket.room = channel.name;
+
+    if (err) {
+      socket.emit("error", err);
+    } else {
+      socket.emit("joinChannel", channel);
     }
   });
 });
