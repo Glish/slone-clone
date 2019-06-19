@@ -18,4 +18,11 @@ export const createChannel = name => {
 };
 
 /* update */
-export const selectChannel = id => {};
+export const joinChannel = id => {
+  return {
+    event: "joinChannel",
+    emit: true,
+    handle: ActionTypes.CHANNEL_JOIN,
+    payload: { data: id }
+  };
+};

@@ -14,6 +14,11 @@ const channelReducer = createReducer(defaultState, {
       isLoading: false,
       channels: R.append(action.data, state.channels)
     });
+  },
+  [ActionTypes.CHANNEL_JOIN]: (state, action) => {
+    return R.merge(state, {
+      selectedChannel: action.data
+    });
   }
 });
 

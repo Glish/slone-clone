@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import ChannelModel from "../components/ChannelModel";
-import { getChannels, selectChannel } from "../actions/channelActions";
+import { getChannels, joinChannel } from "../actions/channelActions";
 import * as R from "ramda";
 
 const ChannelList = props => {
@@ -33,9 +33,12 @@ const ChannelList = props => {
                 id={channel.id}
                 key={channel.id}
                 className={
-                  props.channel.selectedChannel === channel.id ? "active" : ""
+                  props.channel.selectedChannel &&
+                  props.channel.selectedChannel.id === channel.id
+                    ? "active"
+                    : ""
                 }
-                onClick={() => props.selectChannel(channel.id)}
+                onClick={() => props.joinChannel(channel.id)}
               >
                 # {channel.name}
               </li>
@@ -55,7 +58,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   getChannels,
-  selectChannel
+  joinChannel
 };
 
 export default connect(
