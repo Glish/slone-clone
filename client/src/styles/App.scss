@@ -180,7 +180,6 @@ $standard-radius: 0.2em;
 
     .message-view {
       // padding: 1.6em;
-      border: 2px solid blue;
       display: flex;
       flex-direction: column;
       width: 100%;
@@ -188,7 +187,28 @@ $standard-radius: 0.2em;
 
       .message-listing {
         flex: 1;
-        background: grey;
+        overflow-x: auto;
+        ul {
+          list-style-type: none;
+          text-align: left;
+          li {
+            padding-bottom: 1em;
+            font-size: 1em;
+            h3 {
+              font-family: "Lato", sans-serif;
+              font-size: 1.1em;
+              padding: 0;
+              margin: 0;
+              color: $text-light;
+
+              strong {
+                font-weight: bold;
+                font-size: 1.2em;
+                color: $text-dark;
+              }
+            }
+          }
+        }
       }
 
       .message-field {
