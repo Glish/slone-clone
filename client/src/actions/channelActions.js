@@ -17,12 +17,20 @@ export const createChannel = name => {
   };
 };
 
-/* update */
 export const joinChannel = id => {
   return {
     event: "joinChannel",
     emit: true,
     handle: ActionTypes.CHANNEL_JOIN,
     payload: { data: id }
+  };
+};
+
+export const createMessage = message => {
+  return {
+    event: "createMessage",
+    emit: true,
+    handle: ActionTypes.CREATE_MESSAGE,
+    payload: { data: { message } }
   };
 };

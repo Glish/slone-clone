@@ -28,13 +28,15 @@ export default () => {
 
     if (emit) {
       socket.emit(event, payload);
+      dispatch({ type: handle });
     }
 
     let handleEvent = handle;
     if (typeof handleEvent === "string") {
-      handleEvent = data => dispatch({ type: handle, data, ...rest });
+      handleEvent = data =>
+        dispatch({ type: `${handle}_SUCCESS`, data, ...rest });
     }
 
-    return socket.on(event, handleEvent);
+    return socket.once(event, handleEvent);
   };
 };

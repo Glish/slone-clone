@@ -5,6 +5,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
 import Dashboard from "./containers/Dashboard";
 import SignIn from "./containers/SignIn";
+import SignUp from "./containers/SignUp";
 import Profile from "./containers/Profile";
 import { getUser } from "./actions/authActions";
 import "./styles/App.scss";
@@ -17,7 +18,6 @@ const App = props => {
 
   const checkAccess = () => {
     const token = localStorage.getItem("token");
-
     if (token && token !== "undefined") {
       props.getUser();
     }
@@ -31,13 +31,16 @@ const App = props => {
             exact
             path="/"
             component={
-              props.auth.user && props.auth.user.nick.length > 0
+              props.auth.user &&
+              props.auth.user.nick &&
+              props.auth.user.nick.length > 0
                 ? Dashboard
                 : Profile
             }
           />
           <PrivateRoute path="/profile" component={Profile} />
           <PublicRoute path="/signin" component={SignIn} />
+          <PublicRoute path="/signup" component={SignUp} />
         </Switch>
       </Router>
     </div>

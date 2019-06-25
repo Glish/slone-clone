@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Moment from "react-moment";
 import { connect } from "react-redux";
+import { createMessage } from "../actions/channelActions";
 import ReactChatView from "react-chatview";
 import * as R from "ramda";
 
 const MessageView = props => {
   const [channelModel, setChannelModel] = useState(false);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     // props.getAllChannels();
@@ -24,7 +26,7 @@ const MessageView = props => {
         <ul>
           {R.map(
             (message, idx) => (
-              <li>
+              <li key={idx}>
                 <h3>
                   <strong>{props.auth.user.nick} : </strong>
                   <Moment calendar={calendarStrings}>
@@ -41,14 +43,28 @@ const MessageView = props => {
     );
   };
 
-  const MessageField = () => <input className="message-field" type="text" />;
+  const handleChange = e => {
+    setMessage(e.target.value);
+  };
+
+  const handleSubmit = e => {
+    if (e.key === "Enter") {
+      props.createMessage(e.target.value);
+    }
+  };
 
   return (
     <div className="message-view">
       <MessageListing
         messages={props.selectedChannel ? props.selectedChannel.messages : []}
       />
-      <MessageField />
+      <input
+        className="message-field"
+        onChange={handleChange}
+        onKeyPress={handleSubmit}
+        value={message}
+        type="text"
+      />
     </div>
   );
 };
@@ -61,7 +77,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  // getAllChannels
+  createMessage
 };
 
 export default connect(

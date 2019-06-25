@@ -27,6 +27,7 @@ $button-text: #ffffff;
 $purple: #3f0e40;
 $dark-purple: #380a36;
 $blue: #0064a3;
+$error: #e01e5a;
 
 $standard-radius: 0.2em;
 
@@ -72,6 +73,28 @@ $standard-radius: 0.2em;
     background: $button-green;
     border-radius: $standard-radius;
     color: $button-text;
+  }
+
+  a {
+    display: block;
+    font-family: "Lato", sans-serif;
+    font-size: 1em;
+    padding: 1em;
+    color: $blue;
+    text-decoration: none;
+  }
+
+  label {
+    &.error {
+      display: block;
+      font-weight: bold;
+      padding: 1em 1.6em;
+      margin: 1em 0;
+      border: 1px solid $border-light;
+      border-radius: $standard-radius;
+      border-left-color: #e01e5a;
+      border-left-width: 0.4em;
+    }
   }
 
   .formbox {

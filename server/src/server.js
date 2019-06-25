@@ -71,7 +71,7 @@ io.attach(server);
 
 const onError = error => {
   if (error.syscall !== "listen") {
-    throw error;
+    throw new Error(error);
   }
 };
 
@@ -95,7 +95,9 @@ io.use(
 
 io.on("connection", socket => {
   socket.on("getUser", async req => {
-    const [err, user] = await to(authService.getUser(socket.decoded.user_id));
+    const [err, user] = await to(
+      authService.getUser(socket.decoded_token.user_id)
+    );
 
     if (err) {
       socket.emit("error", err);
@@ -106,7 +108,7 @@ io.on("connection", socket => {
 
   socket.on("updateUser", async req => {
     const [err, user] = await to(
-      authService.updateUser(socket.decoded.user_id, req.data)
+      authService.updateUser(socket.decoded_token.user_id, req.data)
     );
 
     if (err) {
@@ -127,25 +129,71 @@ io.on("connection", socket => {
   });
 
   socket.on("createChannel", async req => {
-    const [err, channels] = await to(channelService.createChannel(req.data));
+    const [err, channel] = await to(channelService.createChannel(req.data));
 
     if (err) {
       socket.emit("error", err);
     } else {
-      socket.emit("createChannel", { channels });
+      socket.emit("createChannel", channel);
     }
   });
 
   socket.on("joinChannel", async req => {
-    const [err, channel] = await to(channelService.getChannel(req.data));
-
-    socket.join(channel.name);
-    socket.room = channel.name;
+    const [err, user] = await to(
+      authService.getUser(socket.decoded_token.user_id)
+    );
 
     if (err) {
       socket.emit("error", err);
     } else {
-      socket.emit("joinChannel", channel);
+      if (socket.room) socket.leave(socket.room);
+      socket.join(`channel ${req.data}`);
+      socket.room = req.data;
+
+      const joinMessage = "joined channel";
+
+      const [messageErr, message] = await to(
+        messageService.createMessage(
+          req.data,
+          socket.decoded_token.user_id,
+          joinMessage
+        )
+      );
+
+      if (messageErr) {
+        socket.emit("error", messageErr);
+      } else {
+        const [channelErr, channel] = await to(
+          channelService.getChannel(req.data)
+        );
+
+        if (channelErr) {
+          socket.emit("error", channelErr);
+        } else {
+          socket.emit("joinChannel", channel);
+        }
+      }
     }
   });
+
+  socket.on("createMessage", async req => {
+    const [err, message] = await to(
+      messageService.createMessage(
+        socket.room,
+        socket.decoded_token.user_id,
+        req.data.message
+      )
+    );
+
+    if (err) {
+      socket.emit("error", error);
+    } else {
+      // io.in(socket.room).emit("createMessage", req.data);
+      // io.in(socket.room).emit("createMessage", req.data);
+      // socket.emit("createMessage", req.data);
+      io.sockets.in(socket.room).emit("createMessage", req.data);
+    }
+  });
+
+  socket.on("error", err => {});
 });

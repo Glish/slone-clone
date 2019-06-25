@@ -1,26 +1,22 @@
 import models from "../models";
-
 import { to } from "../utils";
 
 // eslint-disable-next-line consistent-return
-export const createMessage = async message => {
-  /*
-  let err;
-  let message;
+export const createMessage = async (ChannelId, UserId, messageText) => {
+  if (messageText.length > 0) {
+    const [err, message] = await to(
+      models.Message.create({ ChannelId, UserId, message: messageText })
+    );
 
-  if (message.length > 0) {
-    [err, message] = await to(models.Message.create({ name }));
-    if (err) throw "channel with that name already exists";
+    if (err) throw new Error(err);
 
     return message.toWeb();
   }
-  */
-  // throw "A valid channel was not entered.";
 };
 
 export const getMessages = async () => {
   const [err, messages] = await to(models.Message.findAll());
-  if (err) throw "Failed to get all messages.";
+  if (err) throw new Error("Failed to get all messages.");
 
   return messages;
 };

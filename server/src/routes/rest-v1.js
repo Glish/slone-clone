@@ -20,13 +20,17 @@ router.get("/", (req, res, next) => {
   });
 });
 
-router.get("/hello", (req, res) => {
-  res.send("Hello World!");
-});
-
 router.post("/users/login", async (req, res) => {
   const { body } = req;
   const [err, auth] = await to(authService.authUser(body));
+  if (err) return ResponseError(res, err, 422);
+
+  return ResponseSuccess(res, auth);
+});
+
+router.post("/users/signup", async (req, res) => {
+  const { body } = req;
+  const [err, auth] = await to(authService.createUser(body));
   if (err) return ResponseError(res, err, 422);
 
   return ResponseSuccess(res, auth);

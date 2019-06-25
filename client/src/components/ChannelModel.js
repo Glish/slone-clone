@@ -18,6 +18,7 @@ const ChannelModel = props => {
   const handleSubmit = e => {
     e.preventDefault();
     props.createChannel(name.substr(1));
+    props.toggle();
   };
 
   return (

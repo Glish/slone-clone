@@ -20,6 +20,19 @@ export const logOut = () => {
   };
 };
 
+export const signUp = (email, password) => {
+  return {
+    type: ActionTypes.AUTH_SIGNUP,
+    payload: {
+      request: {
+        method: "post",
+        url: `/${values.server.apiVersion}/users/signup`,
+        data: { email, password }
+      }
+    }
+  };
+};
+
 export const getUser = () => {
   return {
     type: ActionTypes.AUTH_GET_USER,
@@ -34,7 +47,6 @@ export const getUser = () => {
 
 export const updateUser = fields => {
   return {
-    type: ActionTypes.AUTH_UPDATE_USER,
     event: "updateUser",
     emit: true,
     handle: ActionTypes.AUTH_UPDATE_USER,

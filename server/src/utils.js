@@ -5,7 +5,9 @@ export const to = promise => {
     .then(data => {
       return [null, data];
     })
-    .catch(err => [err]);
+    .catch(err => {
+      return [err];
+    });
 };
 
 export const ResponseError = (res, err, code) => {
@@ -31,14 +33,6 @@ export const ResponseSuccess = (res, data, code) => {
   if (typeof code !== "undefined") res.statusCode = code;
 
   return res.json(sendData);
-};
-
-export const ThrowError = (errMessage, log) => {
-  if (log === true) {
-    console.error(errMessage);
-  }
-
-  throw new Error(errMessage);
 };
 
 export const ActionTypes = {

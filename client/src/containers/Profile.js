@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
+import validator from "validator";
 import logo from "../images/logoalt.svg";
 import { updateUser } from "../actions/authActions";
 import * as R from "ramda";
@@ -8,17 +9,31 @@ const Profile = props => {
   const [formData, setFormData] = useState({
     first: "",
     last: "",
-    nick: ""
+    nick: "",
+    error: ""
   });
 
   const handleChange = e => {
     setFormData(R.merge(formData, { [e.target.name]: e.target.value }));
-    console.log(formData);
   };
 
   const handleSubmit = e => {
-    props.updateUser(formData);
     e.preventDefault();
+
+    const { first, last, nick } = formData;
+
+    if (
+      validator.isEmpty(first) ||
+      validator.isEmpty(last) ||
+      validator.isEmpty(nick)
+    ) {
+      setFormData(R.merge(formData, { error: "All fields must be completed" }));
+      return false;
+    }
+
+    setFormData(R.merge(formData, { error: false }));
+
+    props.updateUser({ first, last, nick });
   };
 
   return (
@@ -49,6 +64,7 @@ const Profile = props => {
           onChange={handleChange}
         />
         <input type="submit" value="Continue" />
+        {formData.error && <label className="error">{formData.error}</label>}
       </form>
     </div>
   );

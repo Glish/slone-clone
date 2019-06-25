@@ -1,35 +1,17 @@
-import React, { useState, Fragment, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import * as R from "ramda";
 import { connect } from "react-redux";
 import validator from "validator";
 import logo from "../images/logoalt.svg";
-import { logIn } from "../actions/authActions";
+import { signUp } from "../actions/authActions";
 
-const SignIn = props => {
+const SignUp = props => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    repassword: "",
     error: false
   });
-
-  useEffect(
-    didUpdate => {
-      if (
-        props.auth &&
-        props.auth.error &&
-        props.auth.error === "login failed"
-      ) {
-        setFormData(
-          R.merge(formData, {
-            error:
-              "Sign in failed: Are you sure this is the correct email? Or click on the link below to create an account"
-          })
-        );
-      }
-    },
-    [formData, props.auth, props.auth.error]
-  );
 
   const handleChange = e =>
     setFormData(R.merge(formData, { [e.target.name]: e.target.value }));
@@ -37,9 +19,13 @@ const SignIn = props => {
   const handleSubmit = e => {
     e.preventDefault();
 
-    const { email, password } = formData;
+    const { email, password, repassword } = formData;
 
-    if (validator.isEmpty(email) || validator.isEmpty(password)) {
+    if (
+      validator.isEmpty(email) ||
+      validator.isEmpty(password) ||
+      validator.isEmpty(repassword)
+    ) {
       setFormData(R.merge(formData, { error: "All fields must be completed" }));
       return false;
     }
@@ -49,16 +35,21 @@ const SignIn = props => {
       return false;
     }
 
+    if (password !== repassword) {
+      setFormData(R.merge(formData, { error: "Passwords don't match" }));
+      return false;
+    }
+
     setFormData(R.merge(formData, { error: false }));
 
-    props.logIn(email, password);
+    props.signUp(email, password);
   };
 
   return (
     <div className="formbox">
       <img src={logo} className="main-logo" alt="logo" />
-      <h1>Sign in to your account</h1>
-      <p>Enter your email and password</p>
+      <h1>Sign up for an account</h1>
+      <p>Enter your email choose a password</p>
       <form onSubmit={handleSubmit}>
         <input
           name="email"
@@ -74,10 +65,16 @@ const SignIn = props => {
           value={formData.password}
           onChange={handleChange}
         />
-        <input type="submit" value="Continue" />
+        <input
+          name="repassword"
+          type="password"
+          placeholder="confirm password"
+          value={formData.repassword}
+          onChange={handleChange}
+        />
+        <input type="submit" value="Sign Up" />
         {formData.error && <label className="error">{formData.error}</label>}
       </form>
-      <Link to="/signup">Or SignUp for an account</Link>
     </div>
   );
 };
@@ -87,10 +84,10 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  logIn
+  signUp
 };
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(SignIn);
+)(SignUp);
