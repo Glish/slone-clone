@@ -38,6 +38,7 @@
     "ramda": "^0.26.1",
     "sequelize": "^5.8.7",
     "socketio-jwt": "^4.5.0",
+    "socketio-jwt-auth": "^0.1.0",
     "validator": "^11.0.0"
   }
 }

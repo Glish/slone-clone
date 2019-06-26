@@ -18,6 +18,7 @@ const App = props => {
 
   const checkAccess = () => {
     const token = localStorage.getItem("token");
+
     if (token && token !== "undefined") {
       props.getUser();
     }

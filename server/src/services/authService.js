@@ -10,7 +10,7 @@ export const createUser = async credentials => {
   const [err, user] = await to(models.User.create(credentials));
   if (err) new Error("user already exists with that email");
 
-  return user.toWeb();
+  return { user: user.toWeb(), token: user.getJWT() };
 };
 
 export const authUser = async credentials => {
@@ -21,7 +21,6 @@ export const authUser = async credentials => {
   if (!credentials.password)
     throw new Error("Please enter a password to login");
 
-  console.log("WHAT THE", credentials.email);
   if (!validator.isEmail(credentials.email))
     throw new Error("A valid email was not entered");
 

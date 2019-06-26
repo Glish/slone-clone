@@ -1,17 +1,13 @@
 import io from "socket.io-client";
+import { logOut } from "../actions/authActions";
 // import * as R from "ramda";
 
 export default () => {
-  let socket = undefined;
+  let socket = io("http://localhost:9000", {
+    query: { token: localStorage.getItem("token") }
+  });
 
   return ({ dispatch }) => next => action => {
-    const token = localStorage.getItem("token");
-
-    if (token && token !== "undefined" && !socket) {
-      socket = io("http://localhost:9000", {
-        query: { token: localStorage.getItem("token") }
-      });
-    }
     if (typeof action === "function") {
       return next(action);
     }

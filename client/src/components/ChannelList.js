@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import ChannelModel from "../components/ChannelModel";
+import { logOut } from "../actions/authActions";
 import { getChannels, joinChannel } from "../actions/channelActions";
 import * as R from "ramda";
 
@@ -46,6 +47,9 @@ const ChannelList = props => {
             props.channel.channels
           )}
       </ul>
+      <button className="logout" onClick={props.logOut}>
+        Log out
+      </button>
       {channelModel && <ChannelModel toggle={toggleChannelModel} />}
     </div>
   );
@@ -58,7 +62,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   getChannels,
-  joinChannel
+  joinChannel,
+  logOut
 };
 
 export default connect(

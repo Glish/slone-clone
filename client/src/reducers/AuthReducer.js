@@ -10,19 +10,13 @@ const authReducer = createReducer(defaultState, {
     });
   },
   [ActionTypes.AUTH_LOGIN_SUCCESS](state, action) {
-    localStorage.setItem("token", action.payload.data.token);
+    localStorage.setItem("token", action.data.token);
 
     return R.mergeDeepRight(state, {
       isLoading: false,
       isLoggedIn: true,
-      user: action.payload.data.user
-    });
-  },
-  [ActionTypes.AUTH_LOGIN_FAIL](state, action) {
-    return R.merge(state, {
-      isLoading: false,
-      isLoggedIn: false,
-      error: "login failed"
+      error: false,
+      user: action.data.user
     });
   },
   [ActionTypes.AUTH_SIGNUP](state, action) {
@@ -32,12 +26,13 @@ const authReducer = createReducer(defaultState, {
     });
   },
   [ActionTypes.AUTH_SIGNUP_SUCCESS](state, action) {
-    localStorage.setItem("token", action.payload.data.token);
+    localStorage.setItem("token", action.data.token);
 
     return R.mergeDeepRight(state, {
       isLoading: false,
       isLoggedIn: true,
-      user: action.payload.data.user
+      error: false,
+      user: action.data.user
     });
   },
   [ActionTypes.AUTH_SIGNUP_FAIL](state, action) {
@@ -57,14 +52,7 @@ const authReducer = createReducer(defaultState, {
     return R.mergeDeepRight(state, {
       isLoading: false,
       isLoggedIn: true,
-      user: action.payload.data.user
-    });
-  },
-  [ActionTypes.AUTH_GET_USER_FAIL](state, action) {
-    return R.mergeDeepRight(state, {
-      isLoading: false,
-      isLoggedIn: false,
-      error: true
+      user: action.data.user
     });
   },
   [ActionTypes.AUTH_UPDATE_USER](state, action) {

@@ -73,6 +73,22 @@ $standard-radius: 0.2em;
     background: $button-green;
     border-radius: $standard-radius;
     color: $button-text;
+
+    &.logout {
+      border: 0;
+      border-radius: 0;
+      border: 1px solid $text-white;
+      background: none;
+      font-size: 1em;
+      padding: 0.8em;
+      margin: 5%;
+      width: 90%;
+      cursor: pointer;
+
+      &:hover {
+        background: $dark-purple;
+      }
+    }
   }
 
   a {
@@ -165,6 +181,7 @@ $standard-radius: 0.2em;
         text-align: left;
         color: $text-white;
         font-size: 1.2em;
+        cursor: pointer;
 
         &:not(:first-child) {
           &:hover {
