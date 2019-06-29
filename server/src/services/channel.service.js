@@ -17,7 +17,10 @@ export const getChannels = async () => {
   const [err, channels] = await to(models.Channel.findAll());
   if (err) throw new Error("Failed to get all channels.");
 
-  return channels;
+  const [channelErr, selectedChannel] = await to(getChannel(1));
+  if (err) throw new Error("Failed to find default channel");
+
+  return { channels, selectedChannel };
 };
 
 export const getChannel = async id => {

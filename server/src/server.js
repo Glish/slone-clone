@@ -8,9 +8,11 @@ import { to } from "./utils";
 import * as authService from "./services/authService";
 import * as channelService from "./services/channel.service";
 import * as messageService from "./services/message.service";
+import { isObject } from "util";
 
 console.log("Environment:", CONFIG.app);
 
+/* configure DB */
 models.sequelize
   .authenticate()
   .then(() => {
@@ -19,12 +21,16 @@ models.sequelize
   .catch(err => {
     console.error("Unable to connect to SQL database:", CONFIG.dbName, err);
   });
+
 if (CONFIG.app === "dev") {
-  models.sequelize.sync(); // creates table if they do not already exist
-  // models.sequelize.sync({ force: true }); // deletes all tables then recreates them - for testing
+  models.sequelize.sync();
+  /* DON'T UNCOMMENT THE FOLLOWING LINE - unless testing, as deletes all tables then recreates them */
+  // models.sequelize.sync({ force: true });
 }
-const io = socketIO();
+
+/* create socket server */
 const server = http.createServer();
+const io = socketIO();
 io.attach(server);
 
 const onError = error => {
@@ -44,113 +50,172 @@ server.listen(port);
 server.on("error", onError);
 server.on("listening", onListening);
 
+/* socket io calls */
 io.on("connection", socket => {
-  socket.use((packet, next) => {
-    if (packet[0] === "login" || packet[0] === "error") next();
+  /* middleware forces JWT authentication on all calls except on login and signup */
+  socket.use(async (packet, next) => {
+    try {
+      // don't run jwt validation on login or signup
+      if (packet[0] === "login" || packet[0] === "signup") return next();
 
-    if (socket.handshake.query && socket.handshake.query.token) {
-      jwt.verify(socket.handshake.query.token, CONFIG.jwtEncryption, function(
-        err,
-        decoded
-      ) {
-        if (err) socket.emit("unauthorized");
-        socket.decoded_token = decoded;
-        next();
-      });
+      // validate all other calls with jwt token
+      if (socket.handshake.query && socket.handshake.query.token) {
+        jwt.verify(socket.handshake.query.token, CONFIG.jwtEncryption, function(
+          err,
+          decoded
+        ) {
+          if (err) return socket.emit("error", "unauthorized");
+          socket.decoded = decoded;
+        });
+      }
+
+      // add user info to socket if does not already exist
+      if (!socket.user) {
+        const [err, user] = await to(
+          authService.getUser(socket.decoded.user_id)
+        );
+        if (err) return socket.emit("error", err);
+        socket.user = user;
+      }
+
+      return next();
+    } catch (error) {
+      socket.emit("error", error);
     }
-
-    socket.emit("unauthorized");
   });
 
   socket.on("login", async req => {
-    const [err, auth] = await to(authService.authUser(req.data));
-    if (err) return socket.emit("error", err);
+    try {
+      const [err, auth] = await to(authService.authUser(req.data));
+      if (err) return socket.emit("error", err);
 
-    socket.emit("login", auth);
+      socket.user = auth.user;
+      socket.emit("login", auth);
+    } catch (error) {
+      socket.emit("error", error);
+    }
   });
 
   socket.on("signup", async req => {
-    const [err, auth] = await to(authService.createUser(req.data));
-    if (err) return socket.emit("error", err);
+    try {
+      const [err, auth] = await to(authService.createUser(req.data));
+      console.log(err);
+      if (err) return socket.emit("error", err);
 
-    socket.emit("signup", auth);
+      socket.user = auth.user;
+      socket.emit("signup", auth);
+    } catch (error) {
+      socket.emit("error", error);
+    }
   });
 
   socket.on("getUser", async req => {
-    const [err, user] = await to(
-      authService.getUser(socket.decoded_token.user_id)
-    );
-    if (err) return socket.emit("error", err);
-
-    socket.emit("getUser", { user });
+    try {
+      socket.emit("getUser", { user: socket.user });
+    } catch (error) {
+      socket.emit("error", error);
+    }
   });
 
   socket.on("updateUser", async req => {
-    const [err, user] = await to(
-      authService.updateUser(socket.decoded_token.user_id, req.data)
-    );
-    if (err) return socket.emit("error", err);
+    try {
+      const [err, user] = await to(
+        authService.updateUser(socket.user.id, req.data)
+      );
 
-    socket.emit("updateUser", { user });
+      if (err) return socket.emit("error", err);
+
+      socket.user = user;
+      socket.emit("updateUser", { user });
+    } catch (error) {
+      socket.emit("error", error);
+    }
   });
 
   socket.on("getChannels", async req => {
-    const [err, channels] = await to(channelService.getChannels());
-    if (err) return socket.emit("error", err);
+    try {
+      const [err, channelsInfo] = await to(channelService.getChannels());
+      if (err) return socket.emit("error", err);
 
-    socket.emit("getChannels", { channels });
+      socket.emit("getChannels", {
+        channels: channelsInfo.channels,
+        selectedChannel: channelsInfo.selectedChannel
+      });
+    } catch (error) {
+      socket.emit("error", error);
+    }
   });
 
   socket.on("createChannel", async req => {
-    const [err, channel] = await to(channelService.createChannel(req.data));
-    if (err) return socket.emit("error", err);
+    try {
+      const [err, channel] = await to(channelService.createChannel(req.data));
+      if (err) return socket.emit("error", err);
 
-    socket.emit("createChannel", channel);
+      socket.emit("createChannel", channel);
+    } catch (error) {
+      socket.emit("error", error);
+    }
   });
 
   socket.on("joinChannel", async req => {
-    console.log("DECODED::", socket.decoded_token);
-    const [userErr, user] = await to(
-      authService.getUser(socket.decoded_token.user_id)
-    );
-    if (userErr) return socket.emit("error", err);
+    try {
+      const [channelErr, channel] = await to(
+        channelService.getChannel(req.data)
+      );
+      if (channelErr) return socket.emit("error", channelErr);
 
-    let [channelErr, channel] = await to(channelService.getChannel(req.data));
-    if (channelErr) return socket.emit("error", channelErr);
+      const [selectedChannelErr, selectedChannel] = await to(
+        channelService.getChannel(channel.id)
+      );
+      if (selectedChannelErr) return socket.emit("error", selectedChannelErr);
 
-    if (socket.room) socket.leave(socket.room);
-    socket.join(channel.id);
-    socket.room = channel.id;
+      if (socket.room !== channel.id) {
+        socket.leave(socket.room);
+        socket.join(channel.id);
+        socket.room = channel.id;
+      }
 
-    const joinMessage = "joined channel";
+      const socketIds = io.sockets.adapter.rooms[socket.room]
+        ? Object.keys(io.sockets.adapter.rooms[socket.room].sockets)
+        : [];
 
-    const [messageErr, message] = await to(
-      messageService.createMessage(
-        req.data,
-        socket.decoded_token.user_id,
-        joinMessage
-      )
-    );
-    if (messageErr) return socket.emit("error", messageErr);
+      let channelUsers = R.map(clientId => {
+        return io.sockets.connected[clientId].user;
+      }, socketIds);
 
-    [channelErr, channel] = await to(channelService.getChannel(req.data));
-    if (channelErr) return socket.emit("error", channelErr);
+      socket.emit(
+        "joinChannel",
+        R.merge(selectedChannel, {
+          selectedChannelMembers: channelUsers
+        })
+      );
 
-    socket.emit("joinChannel", channel);
+      io.sockets
+        .in(socket.room)
+        .emit("userJoinedChannel", { user: socket.user });
+    } catch (error) {
+      socket.emit("error", error);
+    }
   });
 
   socket.on("createMessage", async req => {
-    const [err, message] = await to(
-      messageService.createMessage(
-        socket.room,
-        socket.decoded_token.user_id,
-        req.data.message
-      )
-    );
+    try {
+      const [err, message] = await to(
+        messageService.createMessage(
+          socket.room,
+          socket.user.id,
+          req.data.message
+        )
+      );
 
-    if (err) return socket.emit("error", error);
-    io.sockets.in(socket.room).emit("createMessage", message);
+      if (err) return socket.emit("error", error);
+      io.sockets.in(socket.room).emit("messageCreated", { message });
+    } catch (error) {
+      socket.emit("error", error);
+    }
   });
 
-  socket.on("error", err => {});
+  socket.on("error", err => {
+    socket.emit("serverError", isObject(err) ? err.message : err);
+  });
 });
