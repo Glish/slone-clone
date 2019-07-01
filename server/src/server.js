@@ -25,7 +25,15 @@ models.sequelize
 if (CONFIG.app === "dev") {
   models.sequelize.sync();
   /* DON'T UNCOMMENT THE FOLLOWING LINE - unless testing, as deletes all tables then recreates them */
-  // models.sequelize.sync({ force: true });
+
+  /*
+  models.sequelize.sync({ force: true }).then(() => {
+    console.log("CREATE IT!");
+    models.Channel.create({
+      name: "general"
+    });
+  });
+  */
 }
 
 /* create socket server */
@@ -60,13 +68,14 @@ io.on("connection", socket => {
 
       // validate all other calls with jwt token
       if (socket.handshake.query && socket.handshake.query.token) {
-        jwt.verify(socket.handshake.query.token, CONFIG.jwtEncryption, function(
-          err,
-          decoded
-        ) {
-          if (err) return socket.emit("error", "unauthorized");
-          socket.decoded = decoded;
-        });
+        jwt.verify(
+          socket.handshake.query.token,
+          CONFIG.jwtEncryption,
+          (err, decoded) => {
+            if (err) return socket.emit("error", "unauthorized");
+            socket.decoded = decoded;
+          }
+        );
       }
 
       // add user info to socket if does not already exist
@@ -99,7 +108,6 @@ io.on("connection", socket => {
   socket.on("signup", async req => {
     try {
       const [err, auth] = await to(authService.createUser(req.data));
-      console.log(err);
       if (err) return socket.emit("error", err);
 
       socket.user = auth.user;
@@ -207,7 +215,6 @@ io.on("connection", socket => {
           req.data.message
         )
       );
-
       if (err) return socket.emit("error", error);
       io.sockets.in(socket.room).emit("messageCreated", { message });
     } catch (error) {
@@ -215,7 +222,7 @@ io.on("connection", socket => {
     }
   });
 
-  socket.on("error", err => {
-    socket.emit("serverError", isObject(err) ? err.message : err);
+  socket.on("error", error => {
+    socket.emit("serverError", isObject(error) ? error.message : error);
   });
 });
