@@ -12,7 +12,7 @@ class User extends Sequelize.Model {
       {
         first: DataTypes.STRING,
         last: DataTypes.STRING,
-        nick: DataTypes.STRING,
+        nick: { type: DataTypes.STRING, unique: true },
         email: {
           type: DataTypes.STRING,
           allowNull: true,
