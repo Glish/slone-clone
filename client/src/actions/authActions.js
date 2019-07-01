@@ -15,6 +15,13 @@ export const logOut = () => {
   };
 };
 
+export const error = error => {
+  return {
+    type: ActionTypes.AUTH_ERROR,
+    payload: { error }
+  };
+};
+
 export const signUp = (email, password) => {
   return {
     event: "signup",

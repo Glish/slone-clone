@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { connect } from "react-redux";
 
 import ChannelList from "../components/ChannelList";
@@ -13,13 +13,4 @@ const Dashboard = props => {
   );
 };
 
-const mapStateToProps = state => ({
-  auth: state.auth
-});
-
-const mapDispatchToProps = {};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Dashboard);
+export default Dashboard;

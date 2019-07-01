@@ -1,4 +1,5 @@
 export const ActionTypes = {
+  AUTH_LOADING: "slone/auth/LOADING",
   AUTH_LOGIN: "slone/auth/AUTH_LOGIN",
   AUTH_LOGIN_SUCCESS: "slone/auth/AUTH_LOGIN_SUCCESS",
   AUTH_LOGIN_FAIL: "slone/auth/AUTH_LOGIN_FAIL",
@@ -10,12 +11,13 @@ export const ActionTypes = {
   AUTH_GET_USER_SUCCESS: "slone/auth/AUTH_GET_USER_SUCCESS",
   AUTH_GET_USER_FAIL: "slone/auth/AUTH_GET_USER_FAIL",
   AUTH_UPDATE_USER: "slone/auth/AUTH_UPDATE_USER",
-  AUTH_UPDATE_USER_SUCCESS: "slone/auth/AUTH_UPDATE_USER_SUCCESS"
+  AUTH_UPDATE_USER_SUCCESS: "slone/auth/AUTH_UPDATE_USER_SUCCESS",
+  AUTH_ERROR: "slone/auth/AUTH_ERROR"
 };
 
 export const defaultState = {
   isLoggedIn: false,
-  isLoading: true,
+  isLoading: false,
   error: false,
   token: localStorage.getItem("token"),
   user: undefined

@@ -41,7 +41,7 @@ const ChannelList = props => {
                 }
                 onClick={() => props.joinChannel(channel.id)}
               >
-                # {channel.name}
+                {`# ${channel.name}`}
               </li>
             ),
             props.channel.channels
@@ -70,3 +70,5 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(ChannelList);
+
+export { ChannelList };

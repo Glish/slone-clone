@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import * as R from "ramda";
 import { connect } from "react-redux";
@@ -59,7 +59,7 @@ const SignIn = props => {
       <img src={logo} className="main-logo" alt="logo" />
       <h1>Sign in to your account</h1>
       <p>Enter your email and password</p>
-      <form onSubmit={handleSubmit}>
+      <form name="signup" onSubmit={handleSubmit}>
         <input
           name="email"
           type="text"
@@ -94,3 +94,5 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(SignIn);
+
+export { SignIn };

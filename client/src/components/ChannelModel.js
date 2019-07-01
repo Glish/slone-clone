@@ -57,3 +57,5 @@ export default connect(
   null,
   mapDispatchToProps
 )(ChannelModel);
+
+export { ChannelModel };
