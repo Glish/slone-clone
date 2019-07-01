@@ -1,6 +1,5 @@
 import React from "react";
 import { connect } from "react-redux";
-import channelReducer from "../reducers/ChannelReducer";
 
 const Loading = props => {
   return (

@@ -1,5 +1,4 @@
 import React from "react";
-import { connect } from "react-redux";
 
 import ChannelList from "../components/ChannelList";
 import MessageView from "../components/MessageView";

@@ -73,22 +73,6 @@ $standard-radius: 0.2em;
     border-radius: $standard-radius;
     color: $button-text;
     cursor: pointer;
-
-    &.logout {
-      border: 0;
-      border-radius: 0;
-      border: 1px solid $text-white;
-      background: none;
-      font-size: 1em;
-      padding: 0.8em;
-      margin: 5%;
-      width: 90%;
-      cursor: pointer;
-
-      &:hover {
-        background: $dark-purple;
-      }
-    }
   }
 
   a {
@@ -164,12 +148,15 @@ $standard-radius: 0.2em;
 
     .channel-list {
       width: 260px;
-      flex: 0 0 260px;
+      display: flex;
+      flex-direction: column;
       background: $purple;
 
       ul {
+        flex: 1 1 auto;
         padding: 0;
         margin: 0;
+        overflow-y: scroll;
       }
       li {
         position: relative;
@@ -203,6 +190,24 @@ $standard-radius: 0.2em;
             height: 1.2em;
             border: 1px solid;
             border-radius: 1em;
+          }
+        }
+      }
+      button {
+        &.logout {
+          flex: 0 0 auto;
+          border: 0;
+          border-radius: 0;
+          border: 1px solid $text-white;
+          background: none;
+          font-size: 1em;
+          padding: 0.8em;
+          margin: 5%;
+          width: 90%;
+          cursor: pointer;
+
+          &:hover {
+            background: $dark-purple;
           }
         }
       }
