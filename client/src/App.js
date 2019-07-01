@@ -1,9 +1,11 @@
-import React, { useEffect } from "react";
+import React, { Fragment, useEffect } from "react";
 import { connect } from "react-redux";
 import { BrowserRouter as Router, Switch } from "react-router-dom";
 import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
 import Dashboard from "./containers/Dashboard";
+import ErrorBar from "./components/ErrorBar";
+import Loading from "./components/Loading";
 import SignIn from "./containers/SignIn";
 import SignUp from "./containers/SignUp";
 import Profile from "./containers/Profile";
@@ -25,26 +27,30 @@ const App = props => {
   };
 
   return (
-    <div className="App">
-      <Router>
-        <Switch>
-          <PrivateRoute
-            exact
-            path="/"
-            component={
-              props.auth.user &&
-              props.auth.user.nick &&
-              props.auth.user.nick.length > 0
-                ? Dashboard
-                : Profile
-            }
-          />
-          <PrivateRoute path="/profile" component={Profile} />
-          <PublicRoute path="/signin" component={SignIn} />
-          <PublicRoute path="/signup" component={SignUp} />
-        </Switch>
-      </Router>
-    </div>
+    <Fragment>
+      <ErrorBar />
+      <Loading />
+      <div className="App">
+        <Router>
+          <Switch>
+            <PrivateRoute
+              exact
+              path="/"
+              component={
+                props.auth.user &&
+                props.auth.user.nick &&
+                props.auth.user.nick.length > 0
+                  ? Dashboard
+                  : Profile
+              }
+            />
+            <PrivateRoute path="/profile" component={Profile} />
+            <PublicRoute path="/signin" component={SignIn} />
+            <PublicRoute path="/signup" component={SignUp} />
+          </Switch>
+        </Router>
+      </div>
+    </Fragment>
   );
 };
 
@@ -58,3 +64,5 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(App);
+
+export { App };
