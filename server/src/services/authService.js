@@ -8,7 +8,7 @@ export const createUser = async credentials => {
     throw new Error("A valid email was not entered");
 
   const [err, user] = await to(models.User.create(credentials));
-  if (err) new Error("user already exists with that email");
+  if (err) throw new Error("user already exists with that email");
 
   return { user: user.toWeb(), token: user.getJWT() };
 };
@@ -51,9 +51,8 @@ export const updateUser = async (id, fields) => {
     models.User.update(fields, { where: { id } })
   );
 
+  if (updateErr) throw new Error("nick name already taken");
   if (result[0] === 0) throw new Error("No rows modified");
-
-  if (updateErr) throw new Error(err.message);
 
   const [err, user] = await to(models.User.findOne({ where: { id } }));
   if (err) throw new Error(err.message);
