@@ -43,7 +43,6 @@ const authReducer = createReducer(defaultState, {
       error: action.error
     });
   },
-
   [ActionTypes.AUTH_LOGOUT]: () => {
     localStorage.removeItem("token");
     return R.always(defaultState);

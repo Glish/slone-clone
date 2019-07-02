@@ -26,11 +26,7 @@ export const getChannels = async () => {
 export const getChannel = async id => {
   const [err, channel] = await to(
     models.Channel.findByPk(id, {
-      include: [
-        {
-          model: models.Message
-        }
-      ]
+      include: [{ all: true, nested: true }]
     })
   );
   if (err) throw new Error("Failed to get channel");

@@ -1,6 +1,5 @@
 import React from "react";
 import { shallow, mount, debug } from "../../enzyme";
-import { ChannelList } from "../ChannelList";
 import { MessageView } from "../MessageView";
 
 describe("Message view tests", () => {

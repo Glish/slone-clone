@@ -17,6 +17,10 @@ const socketIOReduxMiddleware = () => {
     store.dispatch({ type: AuthActionTypes.AUTH_ERROR, error });
   });
 
+  socket.on("userLeftChannel", data => {
+    store.dispatch({ type: ChannelActionTypes.CHANNEL_USER_LEFT, data });
+  });
+
   socket.on("userJoinedChannel", data => {
     store.dispatch({ type: ChannelActionTypes.CHANNEL_USER_JOINED, data });
   });
@@ -31,7 +35,6 @@ const socketIOReduxMiddleware = () => {
     }
     const { event, leave, emit, payload, handle, ...rest } = action;
     if (!event) {
-      // alert(`TYPE: ${action.type}`);
       return next(action);
     }
 

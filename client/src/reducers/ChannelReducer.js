@@ -34,8 +34,14 @@ const channelReducer = createReducer(defaultState, {
   [ActionTypes.CHANNEL_USER_JOINED]: (state, action) => {
     return R.merge(state, {
       isLoading: false,
-      selectedChannelMembers: R.append(
-        action.data.user,
+      selectedChannelMembers: action.data.selectedChannelMembers
+    });
+  },
+  [ActionTypes.CHANNEL_USER_LEFT]: (state, action) => {
+    return R.merge(state, {
+      isLoading: false,
+      selectedChannelMembers: R.reject(
+        R.propEq("id", action.data.user.id),
         state.selectedChannelMembers
       )
     });

@@ -4,10 +4,16 @@ import { to } from "../utils";
 // eslint-disable-next-line consistent-return
 export const createMessage = async (ChannelId, UserId, messageText) => {
   if (messageText.length > 0) {
-    const [err, message] = await to(
+    const [createErr, createMessage] = await to(
       models.Message.create({ ChannelId, UserId, message: messageText })
     );
+    if (createErr) throw new Error(err);
 
+    const [err, message] = await to(
+      models.Message.findByPk(createMessage.id, {
+        include: [{ all: true, nested: true }]
+      })
+    );
     if (err) throw new Error(err);
 
     return message.toWeb();

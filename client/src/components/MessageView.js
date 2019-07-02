@@ -40,7 +40,7 @@ const MessageView = props => {
             (message, idx) => (
               <li key={message.id}>
                 <h3>
-                  <strong>{props.auth.user.nick} : </strong>
+                  <strong>{message.User ? message.User.nick : ""} : </strong>
                   <Moment calendar={calendarStrings}>
                     {message.createdAt}
                   </Moment>
@@ -62,6 +62,7 @@ const MessageView = props => {
   const handleSubmit = e => {
     if (e.key === "Enter") {
       props.createMessage(e.target.value);
+      setMessage("");
     }
   };
 

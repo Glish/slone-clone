@@ -148,6 +148,7 @@ $standard-radius: 0.2em;
 
     .channel-list {
       width: 260px;
+      min-width: 260px;
       display: flex;
       flex-direction: column;
       background: $purple;
@@ -280,9 +281,9 @@ $standard-radius: 0.2em;
         display: block;
         box-sizing: border-box;
         border-radius: 0.8em;
-        width: 92%;
+        width: calc(100% - 2em);
         padding: 0em 0.8em;
-        margin: 4%;
+        margin: 1em;
         margin-top: 0;
         font-size: 1.4em;
         height: 3em;

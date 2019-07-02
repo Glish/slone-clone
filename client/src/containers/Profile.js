@@ -78,3 +78,5 @@ export default connect(
   null,
   mapDispatchToProps
 )(Profile);
+
+export { Profile };

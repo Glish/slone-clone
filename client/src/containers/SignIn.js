@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import * as R from "ramda";
 import { connect } from "react-redux";
@@ -13,29 +13,18 @@ const SignIn = props => {
     error: false
   });
 
-  useEffect(
-    didUpdate => {
-      if (
-        props.auth &&
-        props.auth.error &&
-        props.auth.error === "login failed"
-      ) {
-        setFormData(
-          R.merge(formData, {
-            error:
-              "Sign in failed: Are you sure this is the correct email? Or click on the link below to create an account"
-          })
-        );
-      }
-    },
-    [formData, props.auth, props.auth.error]
-  );
-
   const handleChange = e =>
     setFormData(R.merge(formData, { [e.target.name]: e.target.value }));
 
   const handleSubmit = e => {
     e.preventDefault();
+
+    /*
+    setFormData({
+      error: "out of here"
+    });
+    return;
+    */
 
     const { email, password } = formData;
 

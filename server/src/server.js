@@ -41,22 +41,8 @@ const server = http.createServer();
 const io = socketIO();
 io.attach(server);
 
-const onError = error => {
-  if (error.syscall !== "listen") {
-    throw new Error(error);
-  }
-};
-
-const onListening = () => {
-  const addr = server.address();
-  const bind = typeof addr === "string" ? `pipe ${addr}` : `port ${addr.port}`;
-  console.log(`LISTENING ON: ${bind}`);
-};
-
 const port = parseInt(process.env.PORT);
 server.listen(port);
-server.on("error", onError);
-server.on("listening", onListening);
 
 /* socket io calls */
 io.on("connection", socket => {
@@ -172,16 +158,14 @@ io.on("connection", socket => {
       );
       if (channelErr) return socket.emit("error", channelErr);
 
-      const [selectedChannelErr, selectedChannel] = await to(
-        channelService.getChannel(channel.id)
-      );
-      if (selectedChannelErr) return socket.emit("error", selectedChannelErr);
+      const leaveRoom = socket.room;
+      socket.leave(leaveRoom);
 
-      if (socket.room !== channel.id) {
-        socket.leave(socket.room);
-        socket.join(channel.id);
-        socket.room = channel.id;
-      }
+      io.sockets.in(leaveRoom).emit("userLeftChannel", { user: socket.user });
+
+      const joinRoom = channel.id;
+      socket.join(joinRoom);
+      socket.room = joinRoom;
 
       const socketIds = io.sockets.adapter.rooms[socket.room]
         ? Object.keys(io.sockets.adapter.rooms[socket.room].sockets)
@@ -193,14 +177,14 @@ io.on("connection", socket => {
 
       socket.emit(
         "joinChannel",
-        R.merge(selectedChannel, {
+        R.merge(channel, {
           selectedChannelMembers: channelUsers
         })
       );
 
       io.sockets
-        .in(socket.room)
-        .emit("userJoinedChannel", { user: socket.user });
+        .in(joinRoom)
+        .emit("userJoinedChannel", { selectedChannelMembers: channelUsers });
     } catch (error) {
       socket.emit("error", error);
     }
