@@ -32,15 +32,11 @@ class User extends Sequelize.Model {
               let hash;
               [err, salt] = await to(bcrypt.genSalt(10));
 
-              if (err) {
-                throw new Error(err.message);
-              }
+              if (err) throw new Error(err.message);
 
               [err, hash] = await to(bcrypt.hash(user.password, salt));
 
-              if (err) {
-                throw new Error(err.message);
-              }
+              if (err) throw new Error(err.message);
 
               user.password = hash;
             }
@@ -51,7 +47,7 @@ class User extends Sequelize.Model {
   }
 
   static associate(models) {
-    this.myAssociation = this.hasMany(models.Message);
+    this.hasMany(models.Message);
   }
 
   async comparePassword(pw) {
@@ -81,6 +77,7 @@ class User extends Sequelize.Model {
 
   toWeb() {
     const json = this.toJSON();
+    delete json.password;
     return json;
   }
 }

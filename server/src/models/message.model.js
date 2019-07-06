@@ -17,8 +17,8 @@ class Message extends Sequelize.Model {
   }
 
   static associate(models) {
-    this.myAssociation = this.belongsTo(models.Channel);
-    this.myAssociation = this.belongsTo(models.User);
+    this.belongsTo(models.Channel);
+    this.belongsTo(models.User);
   }
 
   toWeb() {

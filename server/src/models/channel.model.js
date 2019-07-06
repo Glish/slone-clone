@@ -18,7 +18,7 @@ class Channel extends Sequelize.Model {
   }
 
   static associate(models) {
-    this.myAssociation = this.hasMany(models.Message);
+    this.hasMany(models.Message);
   }
 
   toWeb() {
