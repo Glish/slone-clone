@@ -27,7 +27,6 @@ if (CONFIG.app === "dev") {
   /* DON'T UNCOMMENT THE FOLLOWING LINE - unless testing, as deletes all tables then recreates them */
   /*
   models.sequelize.sync({ force: true }).then(() => {
-    console.log("CREATE IT!");
     models.Channel.create({
       name: "general"
     });
