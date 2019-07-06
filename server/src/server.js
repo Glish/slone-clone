@@ -25,7 +25,6 @@ models.sequelize
 if (CONFIG.app === "dev") {
   models.sequelize.sync();
   /* DON'T UNCOMMENT THE FOLLOWING LINE - unless testing, as deletes all tables then recreates them */
-
   /*
   models.sequelize.sync({ force: true }).then(() => {
     console.log("CREATE IT!");
@@ -66,10 +65,7 @@ io.on("connection", socket => {
 
       // add user info to socket if does not already exist
       if (!socket.user) {
-        const [err, user] = await to(
-          authService.getUser(socket.decoded.user_id)
-        );
-        if (err) return socket.emit("error", err);
+        const user = await authService.getUser(socket.decoded.user_id);
         socket.user = user;
       }
 
@@ -81,8 +77,7 @@ io.on("connection", socket => {
 
   socket.on("login", async req => {
     try {
-      const [err, auth] = await to(authService.authUser(req.data));
-      if (err) return socket.emit("error", err);
+      const auth = await authService.authUser(req.data);
 
       socket.user = auth.user;
       socket.emit("login", auth);
@@ -93,9 +88,7 @@ io.on("connection", socket => {
 
   socket.on("signup", async req => {
     try {
-      const [err, auth] = await to(authService.createUser(req.data));
-      if (err) return socket.emit("error", err);
-
+      auth = await authService.createUser(req.data);
       socket.user = auth.user;
       socket.emit("signup", auth);
     } catch (error) {
@@ -113,9 +106,7 @@ io.on("connection", socket => {
 
   socket.on("updateUser", async req => {
     try {
-      const [err, user] = await to(
-        authService.updateUser(socket.user.id, req.data)
-      );
+      const user = await authService.updateUser(socket.user.id, req.data);
 
       if (err) return socket.emit("error", err);
 
@@ -128,8 +119,7 @@ io.on("connection", socket => {
 
   socket.on("getChannels", async req => {
     try {
-      const [err, channelsInfo] = await to(channelService.getChannels());
-      if (err) return socket.emit("error", err);
+      const channelsInfo = await channelService.getChannels();
 
       socket.emit("getChannels", {
         channels: channelsInfo.channels,
@@ -142,8 +132,7 @@ io.on("connection", socket => {
 
   socket.on("createChannel", async req => {
     try {
-      const [err, channel] = await to(channelService.createChannel(req.data));
-      if (err) return socket.emit("error", err);
+      const channel = await channelService.createChannel(req.data);
 
       socket.emit("createChannel", channel);
     } catch (error) {
@@ -153,11 +142,7 @@ io.on("connection", socket => {
 
   socket.on("joinChannel", async req => {
     try {
-      const [channelErr, channel] = await to(
-        channelService.getChannel(req.data)
-      );
-      if (channelErr) return socket.emit("error", channelErr);
-
+      const channel = await channelService.getChannel(req.data);
       const leaveRoom = socket.room;
       socket.leave(leaveRoom);
 
@@ -192,14 +177,14 @@ io.on("connection", socket => {
 
   socket.on("createMessage", async req => {
     try {
-      const [err, message] = await to(
+      const message = await to(
         messageService.createMessage(
           socket.room,
           socket.user.id,
           req.data.message
         )
       );
-      if (err) return socket.emit("error", error);
+
       io.sockets.in(socket.room).emit("messageCreated", { message });
     } catch (error) {
       socket.emit("error", error);
